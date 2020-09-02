@@ -1,0 +1,203 @@
+<html>
+	<head>
+		<title>Uno Assistant</title>
+		<meta charset="UTF-8">
+		<meta name="description" content="Assistente di Uno - Calcolo punteggio">
+		<meta name="keywords" content="Gioco, Assistente, Punteggio, Uno">
+		<meta name="author" content="Francesco Calabrese">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<style>
+			body {background-color: #F0AF30;}
+			h1, h2   {color: blue; font-family: verdana; text-align:center}
+			p    {color: black; font-family: verdana;}
+			td    {}
+			label{color: black; font-family: verdana;}
+			table, th, td{border: 1px solid black;  border-collapse: collapse; align:center; width:100%;}
+			input {  background-color: #F0BB00;}
+			select  {  background-color: #F0BB00;}
+			tr {background-color: #FFAF30;}
+		</style>
+		<script type="text/javascript">
+		class Giocatore {
+				constructor(nome, punti) {
+				this.Nome = nome;
+				this.Punti = punti;
+			}
+		}
+		
+		var NumeroGiocatori;
+		var PuntiObiettivo;
+		var ElencoGiocatori = []; 
+		var PunteggioAggiunto;
+		
+		function isEmpty(val){
+			return (val === undefined || val == null || val.length <= 0) ? true : false;
+		}
+		
+
+		function validaNomeGiocatori(string){
+			var i;
+			var NuovoHtml;
+
+			var NG= document.getElementById("NomiGiocatori");
+			var NomeGiocatore = NG.getElementsByTagName("input");
+			var validazione=1;
+			
+			console.log("validaNomeGiocatori-------------------------------------");
+			
+			for(i=0;i<NumeroGiocatori;i++){
+				if(isEmpty(NomeGiocatore[i].value)) validazione=0;
+			}
+			if (validazione==1){
+				for(i=0;i<NumeroGiocatori;i++){
+						ElencoGiocatori.push(new Giocatore(NomeGiocatore[i].value,0));
+						console.log("Inserito "+NomeGiocatore[i].value);
+				}
+			}
+			console.log("Validazione "+validazione);
+			return validazione;
+		}
+
+		function inputAggiungiPunti(string){
+			var i;
+			var NuovoHtml;
+			console.log("inputAggiungiPunti-------------------------------------");
+			NuovoHtml="<form id='AggiungiPunti' name='AggiungiPunti'>";
+			NuovoHtml+="<table>";
+			NuovoHtml+="<tr><td>Nome</td><td>Punti</td><td>Aggiunti</td><tr>";
+			for(i=0;i<NumeroGiocatori;i++){
+				NuovoHtml+="<tr><td>"+ElencoGiocatori[i].Nome + "</td><td>" + ElencoGiocatori[i].Punti + "</td>";
+				NuovoHtml+="<td><input type='text' id='PunteggioAggiunto"+i+"' name='PunteggioAggiunto"+i+"'></td><tr>";
+			}
+			NuovoHtml+="</table>";
+			NuovoHtml+= "<br><input type='button' style='width: 100%' value='Invia' onclick='loopGame();'>"
+			NuovoHtml+="</form>";
+			document.getElementById("MainContainer").innerHTML=NuovoHtml;
+		}
+		
+		function loopGame(string)
+		{
+			var winner;
+			console.log("loopGame-------------------------------------");
+			if(validaPuntiGiocatore()) {
+			console.log("validato");
+			winner=aggiungiPuntiGiocatore()
+			console.log("winner "+winner);
+				if(winner<0){
+				console.log("aggiungi punti");
+					inputAggiungiPunti();
+				}
+				else{
+					console.log("proclama vincitore");
+					proclamaVincitore(winner);
+				}
+			}
+		}
+		
+		
+		function validaPuntiGiocatore(string){
+			var i;
+			var checkInput =0;
+			var validazione=0;
+			var PA= document.getElementById("AggiungiPunti");
+			PunteggioAggiunto = PA.getElementsByTagName("input");
+			for(i=0;i<NumeroGiocatori;i++){
+				if(parseInt(PunteggioAggiunto[i].value)||0) checkInput++;
+				if((parseInt(PunteggioAggiunto[i].value)||0)>500) checkInput=999;
+				if((parseInt(PunteggioAggiunto[i].value)||0)<0) checkInput=999;
+			}
+			
+			if(checkInput<2){
+				validazione=1;
+			}
+			return validazione;
+		}
+		
+		function aggiungiPuntiGiocatore(string){
+			var winner=-1;
+			var i;
+			for(i=0;i<NumeroGiocatori;i++){
+				ElencoGiocatori[i].Punti +=(parseInt(PunteggioAggiunto[i].value)||0);
+				if (ElencoGiocatori[i].Punti >=PuntiObiettivo) winner=i;
+			}
+			return winner;
+		}
+		
+		function proclamaVincitore(winner){
+			var NuovoHtml="";
+			NuovoHtml+="<table><tr><td>";
+			NuovoHtml+="<h1>Il vincitore è</h1>";
+			NuovoHtml+="<h1>"+ElencoGiocatori[winner].Nome+"</h1>";
+			NuovoHtml+="</td></tr></table>";
+			document.getElementById("MainContainer").innerHTML=NuovoHtml;
+		}
+		
+		
+		function validaSelezionaGiocatori(string)
+		{
+			var validazione=0;
+			var selIndex = document.forms.SelezionaGiocatori.giocatori.selectedIndex;
+			console.log("validaSelezionaGiocatori-------------------------------------");
+			console.log("Elemento "+selIndex);
+			console.log("Valore "+document.forms.SelezionaGiocatori.giocatori.options[selIndex].value);
+			if (selIndex > -1) {
+				if(!isEmpty(document.forms.SelezionaGiocatori.giocatori.options[selIndex].value) && 
+					document.forms.SelezionaGiocatori.giocatori.options[selIndex].value >1 && 
+					document.forms.SelezionaGiocatori.giocatori.options[selIndex].value <7 &&
+					!isEmpty(document.forms.SelezionaGiocatori.PuntiObiettivo.value) &&
+					document.forms.SelezionaGiocatori.PuntiObiettivo.value >0 &&
+					document.forms.SelezionaGiocatori.PuntiObiettivo.value < 1000
+					){
+					validazione=1;
+					NumeroGiocatori = document.forms.SelezionaGiocatori.giocatori.options[selIndex].value;
+					PuntiObiettivo    = document.forms.SelezionaGiocatori.PuntiObiettivo.value;
+					console.log("Numero giocatori "+NumeroGiocatori);
+					console.log("Punti obiettivo "+PuntiObiettivo);
+				}
+			}
+			console.log("Validazione: "+validazione);
+			return validazione;
+		}
+		
+
+		function inputListaGiocatori(string){
+			var NuovoHtml;
+			var i;
+			console.log("inputListaGiocatori-------------------------------------");
+			console.log("Numero giocatori "+NumeroGiocatori);
+			NuovoHtml="<h2>Inserisci il nome dei giocatori:</h2>";
+			NuovoHtml += "<form id='NomiGiocatori' name='NomiGiocatori'>";
+			NuovoHtml += "<table>";
+			for(i=0;i<NumeroGiocatori;i++){
+				NuovoHtml += "<tr><td><label for='fname'>Giocatore "+(i+1) +":</label></td>";
+				NuovoHtml += "<td><input type='text' id='NomeGiocatore"+i+"' name='NomeGiocatore"+i+"' required/></td></tr>"
+			}
+			NuovoHtml += "</table><br>";
+			NuovoHtml += "<input type='button' style='width: 100%' value='Invia' onclick='validaNomeGiocatori() && inputAggiungiPunti();'></form>";
+			document.getElementById("MainContainer").innerHTML=NuovoHtml;
+		}
+
+		</script>
+	</head>
+	<body>
+		<h1>Uno Assistant</h1>
+		<div id="MainContainer">
+			<form name="SelezionaGiocatori">
+			<table>
+				<tr><td><label for="giocatori">Numero giocatori:</label></td>
+				<td><select id="giocatori" name="giocatori">
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option></td></tr>
+					<tr>
+						<td><label for="giocatori">Punti obiettivo:</label></td>
+						<td><input type="number" id="PuntiObiettivo" name="PuntiObiettivo" value=500></td></tr>
+					</table>
+					<br><input type="button" value="Seleziona" style="width: 100%" onclick="validaSelezionaGiocatori() && inputListaGiocatori();">
+			</select>
+			</form>
+		</div>
+	</body>
+</html>
