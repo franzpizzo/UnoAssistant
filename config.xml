@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <widget xmlns   = "http://www.w3.org/ns/widgets"
     xmlns:gap   = "http://phonegap.com/ns/1.0"
-    id          = "com.ricaricabatteria.example"
+    id          = "com.unoassistant.game"
     versionCode = "10"
     version     = "1.0.0" >
 
 <!-- versionCode is optional and Android only -->
 
-  <name>Prova</name>
+  <name>Uno Assistant</name>
 
   <description>
-      App di prova in html
+      Gestione punteggi nelle partite di Uno
   </description>
 
-  <author href="http://locandaditibi.onlinewebshop.net" email="francesco.calabrese@katamail.com">
+  <author href="http://locandaditibi.onlinewebshop.net/" email="francesco.calabrese@katamail.com">
       Francesco Calabrese
   </author>
 
